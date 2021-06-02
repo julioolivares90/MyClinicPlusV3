@@ -27,7 +27,8 @@ namespace MyClinicPlusV3.Repositories
             {
                 Nombre = userRequest.Nombre,
                 Apellido = userRequest.Apellido,
-                Email = userRequest.Email
+                Email = userRequest.Email,
+                UserName = userRequest.Email    
             };
 
             var result = await _userManager.CreateAsync(user, userRequest.Password);
@@ -40,11 +41,24 @@ namespace MyClinicPlusV3.Repositories
             return new User { };
         }
 
-        public List<User> GetAllUsers()
+        public List<UserViewModel> GetAllUsers()
         {
 
-            var users = _userManager.Users;
-            var usersViewModel = new List<User>();
+            var users = _userManager.Users.ToList();
+
+            var usersViewModel = new List<UserViewModel>();
+
+            foreach (var item in users)
+            {
+                var user = new UserViewModel
+                {
+                    Nombre = item.Nombre,
+                    Apellido = item.Apellido,
+                    Email = item.Email,
+                    UserName = item.UserName
+                };
+                usersViewModel.Add(user);
+            }
             return usersViewModel;
         }
 
@@ -88,7 +102,7 @@ namespace MyClinicPlusV3.Repositories
             oldUser.Nombre = usersViewModel.Nombre;
             oldUser.Apellido = usersViewModel.Apellido;
             oldUser.Email = usersViewModel.Email;
-            
+            oldUser.UserName = usersViewModel.Email;
             var result = await _userManager.UpdateAsync(oldUser);
 
             if (result.Succeeded)

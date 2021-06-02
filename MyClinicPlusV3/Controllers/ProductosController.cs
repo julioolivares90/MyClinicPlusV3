@@ -13,18 +13,20 @@ namespace MyClinicPlusV3.Controllers
 {
     public class ProductosController : Controller
     {
-        
         private readonly IProductoRepository productoRepository;
+        private readonly ITipoProductoRepository tipoProductoRepository;
 
-        public ProductosController(IProductoRepository productoRepository)
+        public ProductosController(IProductoRepository productoRepository,ITipoProductoRepository tipoProductoRepository)
         {
             this.productoRepository = productoRepository;
+            this.tipoProductoRepository = tipoProductoRepository;
         }
 
         // GET: Productos
         public async Task<IActionResult> Index()
         {
-            return View(await productoRepository.GetAllAsync());
+            var productos = await productoRepository.GetProductosWithTipoAsync();
+            return View(productos);
         }
 
         // GET: Productos/Details/5
@@ -35,8 +37,7 @@ namespace MyClinicPlusV3.Controllers
                 return NotFound();
             }
 
-            var producto = await productoRepository.GetByIDAsync(id.Value);
-                
+            var producto = await productoRepository.GetProductoByIdWithTipoAsync(id.Value);
             if (producto == null)
             {
                 return NotFound();
@@ -46,8 +47,10 @@ namespace MyClinicPlusV3.Controllers
         }
 
         // GET: Productos/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            var listItems = await tipoProductoRepository.GetAllAsync();
+            ViewData["TipoProductoId"] = new SelectList(listItems, "Id", "Descripcion");
             return View();
         }
 
@@ -56,13 +59,15 @@ namespace MyClinicPlusV3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Nombre,CostoPorUnidad,CostoPublico,Ganancia,Cantidad,Id")] Producto producto)
+        public async Task<IActionResult> Create([Bind("Nombre,CostoPorUnidad,CostoPublico,Ganancia,Cantidad,TipoProductoId,Id")] Producto producto)
         {
             if (ModelState.IsValid)
             {
-               await productoRepository.AddAsync(producto);
+                await productoRepository.AddAsync(producto);
                 return RedirectToAction(nameof(Index));
             }
+            var listItems = await tipoProductoRepository.GetAllAsync();
+            ViewData["TipoProductoId"] = new SelectList(listItems, "Id", "Descripcion", producto.TipoProductoId);
             return View(producto);
         }
 
@@ -79,6 +84,8 @@ namespace MyClinicPlusV3.Controllers
             {
                 return NotFound();
             }
+            var listItems = await tipoProductoRepository.GetAllAsync();
+            ViewData["TipoProductoId"] = new SelectList(listItems, "Id", "Descripcion", producto.TipoProductoId);
             return View(producto);
         }
 
@@ -87,7 +94,7 @@ namespace MyClinicPlusV3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Nombre,CostoPorUnidad,CostoPublico,Ganancia,Cantidad,Id")] Producto producto)
+        public async Task<IActionResult> Edit(int id, [Bind("Nombre,CostoPorUnidad,CostoPublico,Ganancia,Cantidad,TipoProductoId,Id")] Producto producto)
         {
             if (id != producto.Id)
             {
@@ -98,12 +105,12 @@ namespace MyClinicPlusV3.Controllers
             {
                 try
                 {
-                   await productoRepository.UpdateAsync(producto);
+                    await productoRepository.UpdateAsync(producto);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    var productoExiste = await ProductoExists(producto.Id);
-                    if (!productoExiste)
+                    var productoExists = await ProductoExists(producto.Id);
+                    if (!productoExists)
                     {
                         return NotFound();
                     }
@@ -114,6 +121,8 @@ namespace MyClinicPlusV3.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            var listItems = await tipoProductoRepository.GetAllAsync();
+            ViewData["TipoProductoId"] = new SelectList(listItems, "Id", "Descripcion", producto.TipoProductoId);
             return View(producto);
         }
 
@@ -125,7 +134,7 @@ namespace MyClinicPlusV3.Controllers
                 return NotFound();
             }
 
-            var producto = await productoRepository.GetByIDAsync(id.Value);
+            var producto = await productoRepository.GetProductoByIdWithTipoAsync(id.Value);
             if (producto == null)
             {
                 return NotFound();
@@ -139,15 +148,29 @@ namespace MyClinicPlusV3.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var producto = await productoRepository.GetByIDAsync(id);
+            var producto = await productoRepository
+                .GetByIDAsync(id);
 
-            await productoRepository.DeleteAsync(producto);
+            await productoRepository
+                .DeleteAsync(producto);
             return RedirectToAction(nameof(Index));
         }
 
         private async Task<bool> ProductoExists(int id)
         {
             return await productoRepository.AnyAsync(id);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> FindMedicamentoByName([FromQuery]string nameMedicamento)
+        {
+            var producto = await productoRepository.FindMedicamentoByName(nameMedicamento);
+
+            if (producto != null)
+            {
+                return Json(producto);
+            }
+            return NotFound();
         }
     }
 }

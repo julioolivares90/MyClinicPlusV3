@@ -22,6 +22,7 @@ namespace MyClinicPlusV3.Controllers
         // GET: TipoProductoes
         public async Task<IActionResult> Index()
         {
+            
             return View(await _context.TipoProductos.ToListAsync());
         }
 

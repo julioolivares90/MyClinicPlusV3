@@ -1,17 +1,18 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MyClinicPlusV3.Models
+namespace MyClinicPlusV3.ViewModels
 {
-    public class User : IdentityUser
+    public class UserViewModel
     {
         public string Nombre { get; set; }
 
         public string Apellido { get; set; }
 
-        public ICollection<Venta> Ventas { get; set; }
+        public string Email { get; set; }
+
+        public string UserName { get; set; }
     }
 }

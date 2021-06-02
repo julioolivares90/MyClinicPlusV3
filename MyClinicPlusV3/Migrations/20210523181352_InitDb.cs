@@ -70,7 +70,7 @@ namespace MyClinicPlusV3.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "TipoProducto",
+                name: "TipoProductos",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -82,7 +82,7 @@ namespace MyClinicPlusV3.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TipoProducto", x => x.Id);
+                    table.PrimaryKey("PK_TipoProductos", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -238,7 +238,7 @@ namespace MyClinicPlusV3.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Producto",
+                name: "Productos",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -249,17 +249,17 @@ namespace MyClinicPlusV3.Migrations
                     CostoPublico = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
                     Ganancia = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
                     Cantidad = table.Column<int>(type: "int", nullable: false),
-                    TipoProductoId = table.Column<int>(type: "int", nullable: true)
+                    TipoProductoId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Producto", x => x.Id);
+                    table.PrimaryKey("PK_Productos", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Producto_TipoProducto_TipoProductoId",
+                        name: "FK_Productos_TipoProductos_TipoProductoId",
                         column: x => x.TipoProductoId,
-                        principalTable: "TipoProducto",
+                        principalTable: "TipoProductos",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -271,17 +271,24 @@ namespace MyClinicPlusV3.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Cantidad = table.Column<int>(type: "int", nullable: false),
                     PrecioVenta = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
-                    VentaId = table.Column<int>(type: "int", nullable: true)
+                    VentaId = table.Column<int>(type: "int", nullable: false),
+                    ProductoId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DetalleVentas", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_DetalleVentas_Productos_VentaId",
+                        column: x => x.VentaId,
+                        principalTable: "Productos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_DetalleVentas_Ventas_VentaId",
                         column: x => x.VentaId,
                         principalTable: "Ventas",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -328,8 +335,8 @@ namespace MyClinicPlusV3.Migrations
                 column: "VentaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Producto_TipoProductoId",
-                table: "Producto",
+                name: "IX_Productos_TipoProductoId",
+                table: "Productos",
                 column: "TipoProductoId");
 
             migrationBuilder.CreateIndex(
@@ -359,16 +366,16 @@ namespace MyClinicPlusV3.Migrations
                 name: "DetalleVentas");
 
             migrationBuilder.DropTable(
-                name: "Producto");
+                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles");
+                name: "Productos");
 
             migrationBuilder.DropTable(
                 name: "Ventas");
 
             migrationBuilder.DropTable(
-                name: "TipoProducto");
+                name: "TipoProductos");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

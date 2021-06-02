@@ -26,6 +26,10 @@ namespace MyClinicPlusV3.Models
         [Required]
         public int Cantidad { get; set; }
 
+        public int TipoProductoId { get; set; }
         public TipoProducto TipoProducto { get; set; }
+
+       
+        public ICollection<DetalleVenta> DetalleVenta { get; set; }
     }
 }

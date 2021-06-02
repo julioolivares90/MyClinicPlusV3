@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,11 +8,8 @@ using Microsoft.Extensions.Hosting;
 using MyClinicPlusV3.Data;
 using MyClinicPlusV3.Models;
 using MyClinicPlusV3.Repositories;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
 
 namespace MyClinicPlusV3
 {
@@ -30,7 +25,8 @@ namespace MyClinicPlusV3
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
+            services.AddControllersWithViews()
+                .AddRazorRuntimeCompilation();
 
             //configuracion de identity y entity framework core
 

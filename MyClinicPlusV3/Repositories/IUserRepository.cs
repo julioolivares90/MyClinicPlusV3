@@ -11,7 +11,7 @@ namespace MyClinicPlusV3.Repositories
     {
         public Task<User> CreateUser(UserRequest userRequest, string roleName);
 
-        public List<User> GetAllUsers();
+        public List<UserViewModel> GetAllUsers();
 
         public Task<bool> DeleteUser(string email);
 

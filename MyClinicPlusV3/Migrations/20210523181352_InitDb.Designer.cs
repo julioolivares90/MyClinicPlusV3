@@ -9,7 +9,7 @@ using MyClinicPlusV3.Data;
 namespace MyClinicPlusV3.Migrations
 {
     [DbContext(typeof(VentasDbContext))]
-    [Migration("20210522202559_InitDb")]
+    [Migration("20210523181352_InitDb")]
     partial class InitDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -159,7 +159,10 @@ namespace MyClinicPlusV3.Migrations
                     b.Property<decimal>("PrecioVenta")
                         .HasColumnType("decimal(65,30)");
 
-                    b.Property<int?>("VentaId")
+                    b.Property<int>("ProductoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VentaId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -192,14 +195,14 @@ namespace MyClinicPlusV3.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
-                    b.Property<int?>("TipoProductoId")
+                    b.Property<int>("TipoProductoId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("TipoProductoId");
 
-                    b.ToTable("Producto");
+                    b.ToTable("Productos");
                 });
 
             modelBuilder.Entity("MyClinicPlusV3.Models.TipoProducto", b =>
@@ -218,7 +221,7 @@ namespace MyClinicPlusV3.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TipoProducto");
+                    b.ToTable("TipoProductos");
                 });
 
             modelBuilder.Entity("MyClinicPlusV3.Models.User", b =>
@@ -369,9 +372,19 @@ namespace MyClinicPlusV3.Migrations
 
             modelBuilder.Entity("MyClinicPlusV3.Models.DetalleVenta", b =>
                 {
+                    b.HasOne("MyClinicPlusV3.Models.Producto", "Producto")
+                        .WithMany("DetalleVenta")
+                        .HasForeignKey("VentaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("MyClinicPlusV3.Models.Venta", "Venta")
                         .WithMany("DetalleVenta")
-                        .HasForeignKey("VentaId");
+                        .HasForeignKey("VentaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Producto");
 
                     b.Navigation("Venta");
                 });
@@ -380,7 +393,9 @@ namespace MyClinicPlusV3.Migrations
                 {
                     b.HasOne("MyClinicPlusV3.Models.TipoProducto", "TipoProducto")
                         .WithMany("Productos")
-                        .HasForeignKey("TipoProductoId");
+                        .HasForeignKey("TipoProductoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("TipoProducto");
                 });
@@ -392,6 +407,11 @@ namespace MyClinicPlusV3.Migrations
                         .HasForeignKey("UserId");
 
                     b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("MyClinicPlusV3.Models.Producto", b =>
+                {
+                    b.Navigation("DetalleVenta");
                 });
 
             modelBuilder.Entity("MyClinicPlusV3.Models.TipoProducto", b =>

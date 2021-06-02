@@ -24,8 +24,19 @@ namespace MyClinicPlusV3.Data
         {
             base.OnModelCreating(builder);
             
-            builder.Entity<TipoProducto>().ToTable(nameof(TipoProducto)).HasMany(c => c.Productos);
-            builder.Entity<Producto>().ToTable(nameof(Producto)).HasOne(c => c.TipoProducto);
+            builder.Entity<TipoProducto>()
+                .HasMany(c => c.Productos).WithOne(c=>c.TipoProducto).OnDelete(DeleteBehavior.Cascade).HasForeignKey(c=>c.TipoProductoId);
+
+            builder.Entity<Producto>()
+                .HasOne(c => c.TipoProducto).WithMany(c=>c.Productos).HasForeignKey(c=>c.TipoProductoId).OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<DetalleVenta>().HasOne(c => c.Producto).WithMany(c => c.DetalleVenta).HasForeignKey(c=>c.VentaId).OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Venta>().HasMany(c => c.DetalleVenta).WithOne(c=>c.Venta).HasForeignKey(c=>c.VentaId).OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Venta>().HasOne(c => c.Usuario).WithMany(c => c.Ventas).HasForeignKey(c=>c.UserId).OnDelete(DeleteBehavior.Cascade);
+
+
         }
 
 
